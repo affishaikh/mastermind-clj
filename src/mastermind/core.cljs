@@ -9,6 +9,8 @@
 
 (def board-state (r/atom (vec (repeat 12 (vec (repeat 5 ""))))))
 
+(def won? (r/atom false))
+
 (defn cal-feedback
   [row code]
   (as-> [] feedback
@@ -24,7 +26,11 @@
         ^{:key k}
         {:class    ["feedback-row"]}
         [:input {:type     "checkbox"
-                 :on-click #(reset! colors (cal-feedback (nth @board-state index) code-state))}]
+                 :on-click #(do (reset! colors (cal-feedback (nth @board-state index) code-state))
+                                (reset! won? (= 5 (count
+                                                    (filter
+                                                      #{"red"}
+                                                      (cal-feedback (nth @board-state index) code-state))))))}]
         (map-indexed #(hole %2 "feedback-hole" (str "fh" %1) "") @colors)])))
 
 (defn hole
@@ -53,19 +59,29 @@
      (map-indexed #(hole index %1 %2) r)]
     [feedback index (str "f" index)]]))
 
-(defn board
-  []
-  [:div
-   [row (repeat 5 "?") "code"]
-   (map-indexed #(row %2 %1 (str "row" %1)) @board-state)])
-
 (defn pegs
   [colors]
   [:div
    {:class ["pegs"]}
-   (map-indexed (fn [_ color] [:div
+   (map-indexed (fn
+                  [_ color]
+                  [:div
                    {:class ["peg" color]
-                    :on-click #(reset! selected-color color)}]) colors)])
+                   :on-click #(reset! selected-color color)}])
+                colors)])
+
+(defn overlay
+  []
+  (when @won?
+    [:div {:class "won"}
+     [:div "Congratulations! You Won."]]))
+
+(defn board
+  []
+  [:div
+   [row (repeat 5 "?") "code"]
+   (map-indexed #(row %2 %1 (str "row" %1)) @board-state)
+   [overlay]])
 
 (r/render-component [:div {:class ["container"]} [board] [pegs colors]]
                     (. js/document (getElementById "app")))

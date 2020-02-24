@@ -1,7 +1,7 @@
 (ns mastermind.core
   (:require [reagent.core :as r :refer [atom]]))
 
-(def colors ["red" "green" "blue" "violet" "pink" "orange" "white" "yellow"])
+(def colors ["red" "green" "blue" "darkviolet" "deeppink" "darkorange" "white" "yellow"])
 
 (def code-state (take 5 (shuffle colors)))
 
@@ -34,8 +34,7 @@
   ([color class key content]
    [:div
     ^{:key key}
-    {:style {:background color}
-     :class [class]}
+    {:class [class color]}
     content])
   ([r c color]
    [:div
@@ -51,7 +50,7 @@
   ([r index key]
    [:div
     {:class ["row"]}
-    ^{:key (str key index)}
+    ^{:key key}
     [:div
      {:class ["pegs-row"]}
      (map-indexed #(hole index %1 %2) r)]
@@ -61,7 +60,7 @@
   []
   [:div
    [row (repeat 5 "?") "code"]
-   (map-indexed #(row %2 %1 "row") @board-state)])
+   (map-indexed #(row %2 %1 (str "row" %1)) @board-state)])
 
 (defn palette
   [colors]

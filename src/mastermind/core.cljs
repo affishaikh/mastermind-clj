@@ -64,8 +64,7 @@
   [:div
    {:class ["palette"]}
    (map-indexed (fn [_ color] [:div
-                   {:class ["palette-unit"]
-                    :style {:background-color color}
+                   {:class ["palette-unit" color]
                     :on-click #(reset! selected-color color)}]) colors)])
 
 (r/render-component [:div {:class ["container"]} [board] [palette colors]]

@@ -59,13 +59,13 @@
    [row (repeat 5 "?") "code"]
    (map-indexed #(row %2 %1 (str "row" %1)) @board-state)])
 
-(defn palette
+(defn pegs
   [colors]
   [:div
-   {:class ["palette"]}
+   {:class ["pegs"]}
    (map-indexed (fn [_ color] [:div
-                   {:class ["palette-unit" color]
+                   {:class ["peg" color]
                     :on-click #(reset! selected-color color)}]) colors)])
 
-(r/render-component [:div {:class ["container"]} [board] [palette colors]]
+(r/render-component [:div {:class ["container"]} [board] [pegs colors]]
                     (. js/document (getElementById "app")))

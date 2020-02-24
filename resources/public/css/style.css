@@ -59,12 +59,12 @@ html {
     justify-content: space-evenly;
 }
 
-.palette {
+.pegs {
     display:flex;
     align-items: center;
 }
 
-.palette-unit {
+.peg {
     height: 40px;
     width: 40px;
     border-radius: 50%;

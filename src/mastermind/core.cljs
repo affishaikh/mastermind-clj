@@ -11,13 +11,10 @@
 
 (defn cal-feedback
   [row code]
-  (shuffle
-    (reduce
-     #(cond
-        (= (nth row %2) (nth code %2)) (conj %1 "red")
-        (boolean (some #{(nth row %2)} code)) (conj %1 "white")
-        :else (conj %1 "grey"))
-     [] (range 5))))
+  (as-> [] feedback
+        (concat feedback (repeat (count (filter true? (map = row code))) "red"))
+        (concat feedback (repeat (- (count (filter (set code) row)) (count feedback)) "white"))
+        (concat feedback (repeat (- 5 (count feedback)) "grey"))))
 
 (defn feedback
   []

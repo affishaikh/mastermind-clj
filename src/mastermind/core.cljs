@@ -54,7 +54,10 @@
     (map-indexed #(hole "grey" "hole" (str "code" %1) %2) r)])
   ([r index key]
    (let
-     [class (if (= (:current-row @game) index) "" "disabled")]
+     [class (cond
+              (= (:current-row @game) index) ""
+              (< (:current-row @game) index) "done"
+              :else "disabled")]
      [:div
       {:class ["row" class]}
       ^{:key key}

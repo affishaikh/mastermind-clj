@@ -7,7 +7,8 @@
 
 (def selected-color (r/atom ""))
 
-(def board-state (r/atom (vec (repeat 12 (vec (repeat 5 ""))))))
+(def game (r/atom {:board (vec (repeat 12 (vec (repeat 5 ""))))
+                   :current-row 11}))
 
 (def won? (r/atom false))
 
@@ -23,15 +24,16 @@
   (let [colors (r/atom (repeat 5 "grey"))]
     (fn [index k]
       [:div
-        ^{:key k}
-        {:class    ["feedback-row"]}
-        [:input {:type     "checkbox"
-                 :on-click #(do (reset! colors (cal-feedback (nth @board-state index) code-state))
-                                (reset! won? (= 5 (count
-                                                    (filter
-                                                      #{"red"}
-                                                      (cal-feedback (nth @board-state index) code-state))))))}]
-        (map-indexed #(hole %2 "feedback-hole" (str "fh" %1) "") @colors)])))
+       ^{:key k}
+       {:class ["feedback-row"]}
+       [:input {:type     "checkbox"
+                :on-click #(do (reset! game (update @game :current-row dec))
+                               (reset! colors (cal-feedback (nth (:board @game) index) code-state))
+                               (reset! won? (= 5 (count
+                                                   (filter
+                                                     #{"red"}
+                                                     (cal-feedback (nth (:board @game) index) code-state))))))}]
+       (map-indexed #(hole %2 "feedback-hole" (str "fh" %1) "") @colors)])))
 
 (defn hole
   ([color class key content]
@@ -41,7 +43,7 @@
     content])
   ([r c color]
    [:div
-    {:on-click #(reset! board-state (assoc-in @board-state [r c] @selected-color))}
+    {:on-click #(reset! game (update @game :board (fn [board] (assoc-in board [r c] @selected-color))))}
     [hole color "hole" (str r c) ""]]))
 
 (defn row
@@ -51,13 +53,15 @@
     ^{:key key}
     (map-indexed #(hole "grey" "hole" (str "code" %1) %2) r)])
   ([r index key]
-   [:div
-    {:class ["row"]}
-    ^{:key key}
-    [:div
-     {:class ["pegs-row"]}
-     (map-indexed #(hole index %1 %2) r)]
-    [feedback index (str "f" index)]]))
+   (let
+     [class (if (= (:current-row @game) index) "" "disabled")]
+     [:div
+      {:class ["row" class]}
+      ^{:key key}
+      [:div
+       {:class ["pegs-row"]}
+       (map-indexed #(hole index %1 %2) r)]
+      [feedback index (str "f" index)]])))
 
 (defn pegs
   [colors]
@@ -66,8 +70,8 @@
    (map-indexed (fn
                   [_ color]
                   [:div
-                   {:class ["peg" color]
-                   :on-click #(reset! selected-color color)}])
+                   {:class    ["peg" color]
+                    :on-click #(reset! selected-color color)}])
                 colors)])
 
 (defn overlay
@@ -80,7 +84,7 @@
   []
   [:div
    [row (repeat 5 "?") "code"]
-   (map-indexed #(row %2 %1 (str "row" %1)) @board-state)
+   (map-indexed #(row %2 %1 (str "row" %1)) (:board @game))
    [overlay]])
 
 (r/render-component [:div {:class ["container"]} [board] [pegs colors]]

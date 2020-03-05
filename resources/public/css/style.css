@@ -51,6 +51,11 @@ html {
     justify-content: space-evenly;
 }
 
+.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
 .feedback-row {
     width: 150px;
 

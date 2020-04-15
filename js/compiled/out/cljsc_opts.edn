@@ -1,0 +1,1 @@
+{:output-to "resources/public/js/compiled/mastermind.js", :main mastermind.core, :optimizations :advanced, :pretty-print false, :output-dir "resources/public/js/compiled/out"}

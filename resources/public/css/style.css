@@ -58,10 +58,6 @@ html, body, #app {
     pointer-events: none;
 }
 
-.done {
-    pointer-events: none;
-}
-
 .feedback-row {
     width: 150px;
 

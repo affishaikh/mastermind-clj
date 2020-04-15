@@ -41,10 +41,14 @@
     ^{:key key}
     {:class [class color]}
     content])
-  ([r c color]
-   [:div
-    {:on-click #(reset! game (update @game :board (fn [board] (assoc-in board [r c] @selected-color))))}
-    [hole color "hole" (str r c) ""]]))
+  ([r c color class d]
+   (if (= class "done")
+     [:div
+      {:on-click #(reset! selected-color color)}
+      [hole color "hole" (str r c) ""]]
+     [:div
+     {:on-click #(reset! game (update @game :board (fn [board] (assoc-in board [r c] @selected-color))))}
+     [hole color "hole" (str r c) ""]])))
 
 (defn row
   ([r key]
@@ -63,7 +67,7 @@
       ^{:key key}
       [:div
        {:class ["pegs-row"]}
-       (map-indexed #(hole index %1 %2) r)]
+       (map-indexed #(hole index %1 %2 class "") r)]
       [feedback index (str "f" index)]])))
 
 (defn pegs
